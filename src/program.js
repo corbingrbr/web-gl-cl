@@ -2,7 +2,7 @@ function Program(vertexShaderID, fragmentShaderID) {
     
     // Returns the id of the vertex shader
     this.getVertexShaderFileName = function() { return vertexShaderID; }
-    
+  
     // Returns the id of the fragment shader
     this.getFragmentShaderFileName = function() { return fragmentShaderID; }
     
@@ -15,23 +15,24 @@ function Program(vertexShaderID, fragmentShaderID) {
     // Load the ShaderProgram
     this.load = function() {
         
-        // Retrieve shaders from html, create, compile, return reference
-        var vertexShader = this.getShader(gl, vertexShaderID)
-        var fragmentShader = this.getShader(gl, fragmentShaderID);
+        // Retrieve shaders from src
+        var vertexShader = this.getShader(vertexShaderSrc, gl.VERTEX_SHADER)
+        var fragmentShader = this.getShader(fragmentShaderSrc, gl.FRAGMENT_SHADER);
         
         // Create shader's ProgramID
         this.pid = gl.createProgram();
-        
+
         // Attach shaders to ProgramID
         gl.attachShader(this.pid, vertexShader);
         gl.attachShader(this.pid, fragmentShader);
 
         // Link program
-        gl.linkProgram(pid);
+        gl.linkProgram(this.pid);
         
-        if (!gl.getProgramParameter(pid, gl.LINK_STATUS)) {
-            alert("Could not initialize shaders " + vertexShaderID 
-                  + "and " + fragmentShaderID);
+        if (!gl.getProgramParameter(this.pid, gl.LINK_STATUS)) {
+            console.log(gl.getProgramInfoLog(pid));
+            alert("Could not initialize shaders " + this.vertexShaderID 
+                  + " and " + this.fragmentShaderID);
         }
 
         // Recognition of proper load
@@ -55,13 +56,13 @@ function Program(vertexShaderID, fragmentShaderID) {
         if (!handles[handleName]){
             switch (type){
             case 'attribute':
-                handles[handleName] = gl.getAttribLocation(programID,
+                handles[handleName] = gl.getAttribLocation(this.pid,
                                                           handleName);
                 gl.enableVertexAttribArray(handles[handleName]);
 
                 break;
             case 'uniform':
-                handles[handleName] = gl.getUniformLocation(programID,
+                handles[handleName] = gl.getUniformLocation(this.pid,
                                                            handleName);
                 break;
             default:
@@ -78,34 +79,13 @@ function Program(vertexShaderID, fragmentShaderID) {
         }
     }
     
-    // Grabs shader from index.html and sources/compiles
-    this.getShader = function(gl, id) {
-        var shaderScript = document.getElementById(id);
-        if (!shaderScript) {
-            return null;
-        }
-        
-        var str = "";
-        var k = shaderScript.firstChild;
-        while (k) {
-            if (k.nodeType == 3) {
-                str += k.textContent;
-            }
-            k = k.nextSibling;
-        }
-        
-        var shader;
-        if (shaderScript.type == "x-shader/x-fragment") {
-            shader = gl.createShader(gl.FRAGMENT_SHADER);
-        } else if (shaderScript.type == "x-shader/x-vertex") {
-            shader = gl.createShader(gl.VERTEX_SHADER);
-        } else {
-            return null;
-        }
-        
-        gl.shaderSource(shader, str);
+    // Grabs shader from source file
+    this.getShader = function(shaderSrc, type) {
+       
+        var shader = gl.createShader(type);
+        gl.shaderSource(shader, shaderSrc);
         gl.compileShader(shader);
-        
+       
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
             alert(gl.getShaderInfoLog(shader));
             return null;
@@ -113,7 +93,7 @@ function Program(vertexShaderID, fragmentShaderID) {
         
         return shader;
     }
-
+   
     this.bind = function() {
         gl.useProgram(this.pid);
     }
@@ -121,7 +101,7 @@ function Program(vertexShaderID, fragmentShaderID) {
     this.unbind = function() {
         gl.useProgram(0);
     }
-
+    
     var handles = {}
     var vertexShaderID = vertexShaderID;
     var fragmentShaderID = fragmentShaderID;
