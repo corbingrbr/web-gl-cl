@@ -10,14 +10,16 @@
 <script type="text/javascript" src="src/program.js"></script>
 <script type="text/javascript" src="src/shader.js"></script>
 <script type="text/javascript" src="src/obj-loader.js"></script>
+<script type="text/javascript" src="src/shape.js"></script>
 <script type="text/javascript" src="resources/sphere.obj.js"></script>
+
 
 <script type="text/javascript">
   
   var gl;
   var prog;
   var camera;
-  var shapes;
+  var sphere;
 
   function webGLStart() {
 
@@ -32,20 +34,20 @@
         prog.addHandle("P", "uniform");
         prog.addHandle("MV", "uniform");
   
-        // Load Objs
-        var nameAndURLS = { "sphere" : "resources/sphere.obj",
-                            "half" : "resources/half.obj",
-                            "eighth" : "resources/eighth.obj"
-                          }
-
-        OBJ.downloadMeshes(nameAndURLS, function (meshes) {} );
-
-
+        // Initialize scene
+        Scene.init();
         
-        // Scene.setup() // load objs ... etc
+
+        sphere = new Shape();
+        sphere.loadMesh("resources/sphere.obj");
+        sphere.init();
+        
+        
+
+       
   
   
-        // Setup scene with objects, camera, lights
+
 
         // Setup key events
         // User.setup();
