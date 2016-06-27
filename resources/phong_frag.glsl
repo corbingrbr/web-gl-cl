@@ -3,7 +3,6 @@
 varying vec3 fragPos; // in camera space
 varying vec3 fragNor; // in camera space
 uniform vec3 kdFront;
-uniform vec3 kdBack;
 uniform float alpha;
 
 void main()
@@ -16,7 +15,6 @@ void main()
 	vec3 kd = kdFront;
 	float ln = dot(l, n);
 	if(ln < 0.0) {
-		//kd = kdBack;
 		ln = -ln;
 	}
 	vec3 diffuse = ln * kd;
