@@ -26,28 +26,32 @@ function Shape()
         eleBufID = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, eleBufID);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(eleBuf), gl.STATIC_DRAW);
+        
+        loaded = true;
     };
     
     // Draw shape
     this.draw = function(prog) {
-        
+
          // Enable and bind attributes to their respective data buffers
-        gl.enableVertexAttribArray(shader.getHandle("vertPos"));
         gl.bindBuffer(gl.ARRAY_BUFFER, posBufID);
-        gl.vertexAttribPointer(prog.getHandle("vertPos"), 3, gl.FLOAT, false, 0, 0);
-        
-        gl.enableVertexAttribArray(shader.getHandle("vertNor"));
+gl.vertexAttribPointer(prog.getHandle("vertPos"), 3, gl.FLOAT, false, 0, 0);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, norBufID);
         gl.vertexAttribPointer(prog.getHandle("vertNor"), 3, gl.FLOAT, false, 0, 0);
-        
+
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, eleBufID);
-        
+
+        gl.drawElements(gl.TRIANGLES, eleBuf.length, gl.UNSIGNED_SHORT, 0);
     };
 
-    var eleBuf;
-    var posBuf;
-    var norBuf;
-    var texBuf;
+    this.isLoaded = function() { return loaded; };
+
+    var loaded = false;
+    var eleBuf = new Array();
+    var posBuf = new Array();
+    var norBuf = new Array();
+    var texBuf = new Array();
     var eleBufID;
     var posBufID;
     var norBufID;

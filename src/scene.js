@@ -37,10 +37,16 @@ var Scene = {
     },
     
     draw : function(MV, prog) { 
-        
-        glUniformMatrix4fv(prog.getHandle("MV"), 1, GL_FALSE, MV.top());
-        glUniform3fv(prog.getHandle("kdFront"), this.colors["orange"]); 
-        sphere.draw(prog);
+        // configure gl viewport and clean buffers
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+
+        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
+        gl.uniform3fv(prog.getHandle("kdFront"), this.colors["orange"]);
+        gl.uniform1f(prog.getHandle("alpha"), 1.0);
+        this.sphere.draw(prog);
         
         //this.crystals[this.whichCrystal].draw(MV, prog);
     },
@@ -73,6 +79,10 @@ var Scene = {
         for (crystal in this.crystals) {
             //crystal.toggleInspection();
         }
+    },
+
+    isLoaded : function() {
+        return this.eighth.isLoaded() && this.half.isLoaded() && this.sphere.isLoaded();
     },
     
     whichCrystal : 0,

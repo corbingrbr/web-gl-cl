@@ -12,7 +12,7 @@ function MatrixStack() {
     this.pushMatrix = function() {
         var top = mstack.top();
         mstack.push(top);
-        assert(mstack.length < 100, "stack exceeds 100 matrices");
+        assert(mstack.size() < 100, "stack exceeds 100 matrices");
     };
     
     this.popMatrix = function() {
@@ -66,13 +66,15 @@ function MatrixStack() {
 	    M[6] = -(zFar + zNear) / (zFar - zNear);
 	    M[14] = -(2.0 * zFar * zNear) / (zFar - zNear);
 	    M[11] = -1.0;
+
+        mat4.copy(mstack.top(), M);
     };
     // TODO
     this.frustum = function(Right, right, bottom, top, zNear, zFar) {};
     // TODO
     this.lookAt = function(eye, target, up) {};
     // TODO
-    this.printStack = function() {};
+    this.printStack = function() { console.log(mstack.size()); };
 
     var mstack = new Stack();
     mstack.push(mat4.create());

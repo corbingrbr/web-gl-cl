@@ -99,7 +99,7 @@ function Program(vertexShaderID, fragmentShaderID) {
     }
 
     this.unbind = function() {
-        gl.useProgram(0);
+        //gl.useProgram(0);
     }
     
     var handles = {}

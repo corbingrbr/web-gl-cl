@@ -16,5 +16,9 @@ function Stack() {
         return stack[stack.length - 1];
     };
 
+    this.size = function() {
+        return stack.length;
+    };
+    
     var stack = new Array();
 }
