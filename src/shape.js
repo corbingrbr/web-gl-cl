@@ -3,7 +3,7 @@ function Shape()
     // Capture OBJ info 
     this.loadMesh = function(objFileName) {
         
-        OBJ.downloadMeshes({"obj" : objFileName}, this.init)
+        OBJ.downloadMeshes({"obj" : objFileName}, this.init);
     };
 
     // Grab mesh data and generate data buffers 

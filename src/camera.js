@@ -24,28 +24,32 @@ function Camera()
 		    state = this.State.ROTATE;
 	    }
     };
-	
-    this.mouseMoved = function(x, y) {
-        var mouseCurr = vec2.fromValues(x, y);
-	    
-        var dv;
-        vec2.sub(dv, mouseCurr, mousePrev);
-	    
-        switch(state) {
-		case this.State.ROTATE:
-			rotations[0] += rfactor * dv[0];
-            rotations[1] += rfactor * dv[1]
-			break;
-		case this.State.TRANSLATE:
-			translations[0] -= translations[2] * tfactor * dv[0];
-			translations[1] += translations[2] * tfactor * dv[1];
-			break;
-		case this.State.SCALE:
-			translations[2] *= (1.0 - sfactor * dv[1]);
-			break;
-	    }
+
+    this.mouseMoved = function(x, y, first) {
         
-	    mousePrev = mouseCurr;
+        if (!first) {
+            
+            var mouseCurr = vec2.fromValues(x, y);
+	    
+            var dv = vec2.create();
+            vec2.sub(dv, mouseCurr, mousePrev);
+	        
+            switch(state) {
+		    case this.State.ROTATE:
+			    rotations[0] += rfactor * dv[0];
+                rotations[1] += rfactor * dv[1]
+			    break;
+		    case this.State.TRANSLATE:
+			    translations[0] -= translations[2] * tfactor * dv[0];
+			    translations[1] += translations[2] * tfactor * dv[1];
+			    break;
+		case this.State.SCALE:
+			    translations[2] *= (1.0 - sfactor * dv[1]);
+			    break;
+	        }
+        }
+	  
+        mousePrev = vec2.fromValues(x, y);
     };
 	
     this.applyProjectionMatrix = function(P) {
@@ -67,6 +71,6 @@ function Camera()
     var rfactor = 0.2;
     var tfactor = 0.001;
     var sfactor = 0.005;
-    var mousePrev;
-    var state;
+    var mousePrev = vec2.fromValues(0,0);
+    var state = this.State.ROTATE;
 }

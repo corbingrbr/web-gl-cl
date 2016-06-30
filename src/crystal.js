@@ -1,37 +1,39 @@
+var CrystalType = {SIMPLE : 0, BODY : 1, FACE : 2 };
+
 function Crystal(type, eighth, half, sphere, colors) {
-    
-    this.Type = { SIMPLE : 0, BODY : 1, FACE : 2 }; 
 
     this.init = function() {
-        initCellPositions();
-
+        this.initCellPositions();
+        
         switch (type) {
             
-            case Type.SIMPLE :
+            case CrystalType.SIMPLE :
             unit = new SimpleCubic(eighth, half, sphere, colors);
-            createSimpleLayers();
+            this.createSimpleLayers();
             break;
 
-            case Type.BODY :
+            case CrystalType.BODY :
             unit = new BodyCentered(eighth, half, sphere, colors);
-            createBodyLayers();
+            this.createBodyLayers();
             break;
 
-            case Type.FACE :
+            case CrystalType.FACE :
             unit = new FaceCentered(eighth, half, sphere, colors);
-            createFaceLayers();
+            this.createFaceLayers();
             break;
         }
     };
     
     this.draw = function(MV, prog) {
-        if (inspecting) {
-            drawInspect(MV, prog);
+       /* if (inspecting) {
+            this.drawInspect(MV, prog);
         } else if (layersDraw) {
-            drawLayers(MV, prog);
+            this.drawLayers(MV, prog);
         } else {
-            drawCells(MV, prog);
-        }
+            this.drawCells(MV, prog);
+        }*/
+
+        this.drawCells(MV, prog);
     };
     
     this.expand = function() {
@@ -55,7 +57,7 @@ function Crystal(type, eighth, half, sphere, colors) {
     };
     
     this.setDrawLayers = function() {
-        toggleLayers();
+        this.toggleLayers();
         layersDraw = true;
     };
 
@@ -63,331 +65,346 @@ function Crystal(type, eighth, half, sphere, colors) {
          if (!inspecting) {
              layersDraw = !layersDraw;
              
-             for (unsigned int i = 0; i < layers.size(); i++) {
-                 layers[i]->reset();
+             for (var i = 0; i < layers.length; i++) {
+                 layers[i].reset();
              }
              
              expansion = 1.0;
              inspctExp = 1.0;
              translucent = false;
-         }    
+         }
     };
 
     this.toggleInspection = function() {
-        inspctExp = 0.0f;
+        inspctExp = 0.0;
         inspecting = !inspecting;
     };
     
     var Cell = function(bounds, pos, ndx) {
+        
         this.distance = 0.0;
         this.bounds = bounds;
         this.pos = pos;
         this.ndx = ndx;
     };
 
-    var drawCells = function(MV, prog) {
-              
-        /*var alpha = translucent ? 0.3 : 1.0;
-          glUniform1f(prog->getUniform("alpha"), alpha);
-          MV->pushMatrix();
+    this.drawCells = function(MV, prog) {
+
+        // sortCells
+        
+        var alpha = translucent ? 0.3 : 1.0;
+        gl.uniform1f(prog.getHandle("alpha"), alpha);
+        
+        MV.pushMatrix();
           
-          // Rotation of face-centered cubic so that it matches layering scheme
-          if (type == FACE) { MV->rotate(45, Vector3f(0,0,1)); }
+        // Rotation of face-centered cubic so that it matches layering scheme
+        if (type == CrystalType.FACE) { MV.rotate(45, vec3.fromValues(0,0,1)); }
+        
+        MV.scale(scale);
+        
+        unit.draw(MV, prog, vec3.fromValues(0,0,0), alpha, true, vec3.fromValues(1,1,1), vec3.fromValues(2,2,2)); 
+        
+        for (var i = 0; i < cells.length; i++) {
+            var v = vec3.fromValues(cells[i].pos[0], cells[i].pos[1], cells[i].pos[2]);
+            // Vector for cell positioning
+            var bounds = cells[i].bounds;
+            var ndx = cells[i].ndx;
+            vec3.scale(v, v, expansion); // Adjust cell positioning by any expansion
           
-          MV->scale(scale);
-          unit->draw(MV, prog, Vector3f(0,0,0), alpha, true, Vector3d(1,1,1), Vector3d(2,2,2)); 
-          
-          for (unsigned int i = 0; i < cells.size(); i++) {
-          Vector3f v = cells[i].pos.head(3);
-          // Vector for cell positioning
-          Vector3d bounds = cells[i].bounds;
-          Vector3d ndx = cells[i].ndx;
-          v *= expansion; // Adjust cell positioning by any expansion
-          
-          unit->draw(MV, prog, v, alpha, false, bounds, ndx); // Draw cell
+            unit.draw(MV, prog, v, alpha, false, bounds, ndx); // Draw cell
         }
         
-        MV->popMatrix();*/
+        MV.popMatrix();
     };
     
-    var drawLayers = function(MV, prog) {
-        /*    MV->pushMatrix();
-              MV->scale(scale);
-              
-              if (type == BODY) {
-              MV->scale(0.87);
-              } else if (type == FACE) {
-              MV->scale(0.71);
-              }
-              
-              for (unsigned int i = 0; i < layers.size(); i++) {
-              layers[i]->draw(MV, prog);
-              
-              // If layer still has more to fall, drop layer further and exit loop
-              if (!layers[i]->isAtRest()) {
-              layers[i]->update();
-              break;
-              }
+    this.drawLayers = function(MV, prog) {
 
-              // If last layer has fallen and settled, switch to other model for expand/contract effects
-              if (i == layers.size() - 1 && layers[i]->isAtRest()) {
-              toggleLayers();
-              }
-              }
-              
-              MV->popMatrix();*/
+        MV.pushMatrix();
+        MV.scale(scale);
+        
+        if (type == CrystalType.BODY) {
+            MV.scale(0.87);
+        } else if (type == CrystalType.FACE) {
+            MV.scale(0.71);
+        }
+
+        for (var i = 0; i < layers.length; i++) {
+
+            layers[i].draw(MV, prog);
+            
+            // If layer still has more to fall, drop layer further and exit loop
+            if (!layers[i].isAtRest()) {
+                layers[i].update();
+                break;
+            }
+
+            // If last layer has fallen and settled, switch to other model for expand/contract effects
+            if (layers[i] == layers[layers.length - 1] && layers[i].isAtRest()) {
+                this.toggleLayers();
+            }
+        }
+        
+        MV.popMatrix();
     };
 
-    var drawInspect = function(MV, prog) {
+    this.drawInspect = function(MV, prog) {
         switch (type) {
-        case Type.SIMPLE:
-            drawSimpleInspect(MV, prog);
+        case CrystalType.SIMPLE:
+            this.drawSimpleInspect(MV, prog);
             break;
-        case Type.BODY:
-            drawBodyInspect(MV, prog);
+        case CrystalType.BODY:
+            this.drawBodyInspect(MV, prog);
             break;
-        case Type.FACE:
-            drawFaceInspect(MV, prog);
+        case CrystalType.FACE:
+            this.drawFaceInspect(MV, prog);
             break;
         }
     };
 
-    var initCellPositions = function() {
+    this.initCellPositions = function() {
+
         var midi = cols/2;
         var midj = rows/2;
         var midk = height/2;
 
         // Offset
-        Vector3f o(-(cols-1), -(height-1), -(rows-1));
+        var o = vec3.fromValues(-(cols-1), -(height-1), -(rows-1));
 
         for (var i = 0; i < rows; i++) {
             for (var j = 0; j < cols; j++) {
                 for (var k = 0; k < height; k++) {
                     if (i != midi || j != midj || k != midk) {
                         
-                        var x = UnitCell::MIDDLE;
-                        var y = UnitCell::MIDDLE;
-                        var z = UnitCell::MIDDLE;
+                        var x = UnitCell.MIDDLE;
+                        var y = UnitCell.MIDDLE;
+                        var z = UnitCell.MIDDLE;
 
-                        if (i == 0) { x = UnitCell::MIN; }
-                        if (i == rows-1) { x = UnitCell::MAX; }
-                        if (i == rows-2) { x = UnitCell::ONEB4MAX; }
+                        if (i == 0) { x = UnitCell.MIN; }
+                        if (i == rows-1) { x = UnitCell.MAX; }
+                        if (i == rows-2) { x = UnitCell.ONEB4MAX; }
 
-                        if (i == 1) { x = UnitCell::ONEB4MIN; }
+                        if (i == 1) { x = UnitCell.ONEB4MIN; }
                         
-                        if (j == 0) { y = UnitCell::MIN; }
-                        if (j == cols-1) { y = UnitCell::MAX; }
+                        if (j == 0) { y = UnitCell.MIN; }
+                        if (j == cols-1) { y = UnitCell.MAX; }
 
-                        if (j == cols-2) { y = UnitCell::ONEB4MAX; }
+                        if (j == cols-2) { y = UnitCell.ONEB4MAX; }
 
-                        if (j == 1) { y = UnitCell::ONEB4MIN; }
-
-
-                        if (k == 0) { z = UnitCell::MIN; }
-                        if (k == height-1) { z = UnitCell::MAX; }
-                        if (k == height-2) { z = UnitCell::ONEB4MAX; }
-
-                        if (k == 1) { z = UnitCell::ONEB4MIN; }
+                        if (j == 1) { y = UnitCell.ONEB4MIN; }
 
 
-                        Vector3d bounds(y, z, x);
-                        Vector4f pos(o(0) + j*2, o(1) + k*2, o(2) + i*2 , 1);
-                        Vector3d ndx(i, j, k);
+                        if (k == 0) { z = UnitCell.MIN; }
+                        if (k == height-1) { z = UnitCell.MAX; }
+                        if (k == height-2) { z = UnitCell.ONEB4MAX; }
 
-                        Cell c(bounds, pos, ndx);
-                        
-                        cells.push_back(c);
+                        if (k == 1) { z = UnitCell.ONEB4MIN; }
+
+
+                        var bounds = vec3.fromValues(y, z, x);
+                        var pos = vec4.fromValues(o[0] + j*2, o[1] + k*2, o[2] + i*2 , 1);
+                        var ndx = vec3.fromValues(i, j, k);
+
+                        var c = new Cell(bounds, pos, ndx);
+                        cells.push(c);
                     }
                 }
             }
         }
     };
-   
-    var calcCellDistance = function(m, v) {
-        Vector4f v2 = m * v;
     
-        return v2(0)*v2(0) + v2(1)*v2(1) + v2(2)*v2(2);
+    this.calcCellDistance = function(m, v) {
+        
+        var v2 = vec3.create();
+        
+        v2[0] = m[0]*v[0] + m[4]*v[1] + m[8]*v[2] + m[12]*v[3];
+        v2[1] = m[1]*v[0] + m[5]*v[1] + m[9]*v[2] + m[13]*v[3];
+        v2[2] = m[2]*v[0] + m[6]*v[1] + m[10]*v[2] + m[14]*v[3];
+ 
+        
+        return v2[0]*v2[0] + v2[1]*v2[1] + v2[2]*v2[2];
     };
     
-    var sortCells = function(viewMatrix) {
+    this.sortCells = function(viewMatrix) {
         
         // Calculate distance of each cell to the camera
-        for (var i = 0; i < cells.length; i++) {
+        for (cell in cells) {
             
-            cells[i].distance = calcCellDistance(viewMatrix, cells[i].pos);
+            cell.distance = this.calcCellDistance(viewMatrix, cell.pos);
             
         }
         
         // Sort cells in descending order by their distance
-        //sort(cells.begin(), cells.end(), sortAlg);                TODO
+        cells.sort(this.sortAlg);                //TODO
     };
     
-    var sortAlg = function(cell1, cell2) {};
+    this.sortAlg = function(a, b) {
+        return c1.distance - c2.distance; // Might have to switch !!!!!!!!!!!!
+    }; 
 
-    var createSimpleLayers = function() {
-        layers.push_back(make_shared<Layer>(4,4, -3, 1.0, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(4,4, -1, 1.0, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(4,4, 1, 1.0, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(4,4, 3, 1.0, colors["grey"], sphere));
+    this.createSimpleLayers = function() {
+        layers.push(new Layer(4,4, -3, 1.0, 1.0, colors["grey"], sphere));
+        layers.push(new Layer(4,4, -1, 1.0, 1.0, colors["grey"], sphere));
+        layers.push(new Layer(4,4, 1, 1.0, 1.0, colors["grey"], sphere));
+        layers.push(new Layer(4,4, 3, 1.0, 1.0, colors["grey"], sphere));
     };
 
-    var createBodyLayers = function() {
-        layers.push_back(make_shared<Layer>(4,4, -3, 1.14942, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(3,3, -2, 1.14942, colors["red"], sphere));
-        layers.push_back(make_shared<Layer>(4,4, -1, 1.14942, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(3,3, 0, 1.14942, colors["red"], sphere));
-        layers.push_back(make_shared<Layer>(4,4, 1, 1.14942, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(3,3, 2, 1.14942, colors["red"], sphere));
-        layers.push_back(make_shared<Layer>(4,4, 3, 1.14942, colors["grey"], sphere));
+    this.createBodyLayers = function() {
+        layers.push(new Layer(4,4, -3, 1.14942, 1.14942, colors["grey"], sphere));
+        layers.push(new Layer(3,3, -2, 1.14942, 1.14942, colors["red"], sphere));
+        layers.push(new Layer(4,4, -1, 1.14942, 1.14942, colors["grey"], sphere));
+        layers.push(new Layer(3,3, 0, 1.14942, 1.14942, colors["red"], sphere));
+        layers.push(new Layer(4,4, 1, 1.14942, 1.14942, colors["grey"], sphere));
+        layers.push(new Layer(3,3, 2, 1.14942, 1.14942, colors["red"], sphere));
+        layers.push(new Layer(4,4, 3, 1.14942, 1.14942, colors["grey"], sphere));
     };
     
-    var createFaceLayers = function() {
+    this.createFaceLayers = function() {
         var s = 2;
 
-        layers.push_back(make_shared<Layer>(4,1, -3.0*s, 1.0, 1.40845, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(3,2, -2.5*s, 1.0, 1.40845, colors["orange"], sphere));
-        layers.push_back(make_shared<Layer>(4,3, -2.0*s, 1.0, 1.40845, colors["green"], sphere));
+        layers.push(new Layer(4,1, -3.0*s, 1.0, 1.40845, colors["grey"], sphere));
+        layers.push(new Layer(3,2, -2.5*s, 1.0, 1.40845, colors["orange"], sphere));
+        layers.push(new Layer(4,3, -2.0*s, 1.0, 1.40845, colors["green"], sphere));
         
-        layers.push_back(make_shared<Layer>(3,4, -1.5*s, 1.0, 1.40845, colors["grey"], sphere));
-        layers.push_back(make_shared<Layer>(4,5, -1.0*s, 1.0, 1.40845, colors["orange"], sphere));
-        layers.push_back(make_shared<Layer>(3,6, -0.5*s, 1.0, 1.40845, colors["green"], sphere));
+        layers.push(new Layer(3,4, -1.5*s, 1.0, 1.40845, colors["grey"], sphere));
+        layers.push(new Layer(4,5, -1.0*s, 1.0, 1.40845, colors["orange"], sphere));
+        layers.push(new Layer(3,6, -0.5*s, 1.0, 1.40845, colors["green"], sphere));
         
-        layers.push_back(make_shared<Layer>(4,7, 0, 1.0, 1.40845, colors["grey"], sphere));
+        layers.push(new Layer(4,7, 0, 1.0, 1.40845, colors["grey"], sphere));
         
-        layers.push_back(make_shared<Layer>(3,6, 0.5*s, 1.0, 1.40845, colors["orange"], sphere));
-        layers.push_back(make_shared<Layer>(4,5, 1.0*s, 1.0, 1.40845, colors["green"], sphere));
-        layers.push_back(make_shared<Layer>(3,4, 1.5*s, 1.0, 1.40845, colors["grey"], sphere));
+        layers.push(new Layer(3,6, 0.5*s, 1.0, 1.40845, colors["orange"], sphere));
+        layers.push(new Layer(4,5, 1.0*s, 1.0, 1.40845, colors["green"], sphere));
+        layers.push(new Layer(3,4, 1.5*s, 1.0, 1.40845, colors["grey"], sphere));
         
-        layers.push_back(make_shared<Layer>(4,3, 2.0*s, 1.0, 1.40845, colors["orange"], sphere));
-        layers.push_back(make_shared<Layer>(3,2, 2.5*s, 1.0, 1.40845, colors["green"], sphere));
-        layers.push_back(make_shared<Layer>(4,1, 3.0*s, 1.0, 1.40845, colors["grey"], sphere));
+        layers.push(new Layer(4,3, 2.0*s, 1.0, 1.40845, colors["orange"], sphere));
+        layers.push(new Layer(3,2, 2.5*s, 1.0, 1.40845, colors["green"], sphere));
+        layers.push(new Layer(4,1, 3.0*s, 1.0, 1.40845, colors["grey"], sphere));
     };
     
-    var drawSimpleInspect = function(MV, prog) {
-        glUniform1f(prog->getUniform("alpha"), 1.0);
-        glUniform3fv(prog->getUniform("kdFront"), 1, colors["blue"].data());
+    this.drawSimpleInspect = function(MV, prog) {
+        gl.uniform1f(prog.getHandle("alpha"), 1.0);
+        gl.uniform3fv(prog.getHandle("kdFront"), colors["blue"]);
         
-        MV->pushMatrix();
-        drawEighth(MV, prog, 0, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 90, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 180, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 270, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        MV.pushMatrix();
+        this.drawEighth(MV, prog, 0, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 90, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 180, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 270, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->pushMatrix();
-        MV->rotate(90.0f, Vector3f(1.0, 0.0, 0.0));
-        drawEighth(MV, prog, 0, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 90, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        MV.pushMatrix();
+        MV.rotate(90.0, vec3.fromValues(1.0, 0.0, 0.0));
+        this.drawEighth(MV, prog, 0, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 90, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->rotate(180.0f, Vector3f(1.0, 0.0, 0.0));
+        MV.rotate(180.0, vec3.fromValues(1.0, 0.0, 0.0));
         
-        drawEighth(MV, prog, 180, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 270, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 180, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 270, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->popMatrix();
+        MV.popMatrix();
         
-        MV->popMatrix();
+        MV.popMatrix();
     };
     
-    var drawBodyInspect = function(MV, prog) {
-        glUniform1f(prog->getUniform("alpha"), 1.0);
-        glUniform3fv(prog->getUniform("kdFront"), 1, colors["grey"].data());
+    this.drawBodyInspect = function(MV, prog) {
+        gl.uniform1f(prog.getUniform("alpha"), 1.0);
+        gl.uniform3fv(prog.getUniform("kdFront"), colors["grey"]);
         
-        MV->pushMatrix();
-        MV->translate(Vector3f(-inspctExp/20 - 0.15, 0, 0));
-        drawEighth(MV, prog, 0, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 90, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 180, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 270, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        MV.pushMatrix();
+        MV.translate(vec3.fromValues(-inspctExp/20 - 0.15, 0, 0));
+        this.drawEighth(MV, prog, 0, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 90, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 180, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 270, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->pushMatrix();
-        MV->rotate(90.0f, Vector3f(1.0, 0.0, 0.0));
-        drawEighth(MV, prog, 0, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 90, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        MV.pushMatrix();
+        MV.rotate(90.0, vec3.fromValues(1.0, 0.0, 0.0));
+        this.drawEighth(MV, prog, 0, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 90, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->rotate(180.0f, Vector3f(1.0, 0.0, 0.0));
+        MV.rotate(180.0, vec3.fromValues(1.0, 0.0, 0.0));
         
-        drawEighth(MV, prog, 180, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 270, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 180, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 270, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->popMatrix();    
-        MV->popMatrix();
+        MV.popMatrix();    
+        MV.popMatrix();
 
-        glUniform3fv(prog->getUniform("kdFront"), 1, colors["red"].data());
+        glUniform3fv(prog.getUniform("kdFront"), colors["red"]);
         
-        MV->pushMatrix();
-        MV->translate(Vector3f(.15,0,0));
-        MV->scale(scale);
-        glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE, MV->topMatrix().data());
-        sphere->draw(prog);
-        MV->popMatrix();
+        MV.pushMatrix();
+        MV.translate(vec3.fromValues(.15,0,0));
+        MV.scale(scale);
+        glUniformMatrix4fv(prog.getUniform("MV"), false, MV.top());
+        sphere.draw(prog);
+        MV.popMatrix();
     };
     
-    var drawFaceInspect = function(MV, prog) {
-        glUniform1f(prog->getUniform("alpha"), 1.0);
-        glUniform3fv(prog->getUniform("kdFront"), 1, colors["grey"].data());
-        MV->pushMatrix();
-        MV->translate(Vector3f(-0.45*1.1, 0, 0));
-        drawEighth(MV, prog, 0, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 90, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 180, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 270, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+    this.drawFaceInspect = function(MV, prog) {
+        glUniform1f(prog.getUniform("alpha"), 1.0);
+        glUniform3fv(prog.getUniform("kdFront"), colors["grey"]);
+        MV.pushMatrix();
+        MV.translate(vec3.fromValues(-0.45*1.1, 0, 0));
+        this.drawEighth(MV, prog, 0, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 90, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 180, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 270, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->pushMatrix();
-        MV->rotate(90.0f, Vector3f(1.0, 0.0, 0.0));
-        drawEighth(MV, prog, 0, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 90, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        MV.pushMatrix();
+        MV.rotate(90.0, vec3.fromValues(1.0, 0.0, 0.0));
+        this.drawEighth(MV, prog, 0, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 90, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->rotate(180.0f, Vector3f(1.0, 0.0, 0.0));
+        MV.rotate(180.0, vec3.fromValues(1.0, 0.0, 0.0));
         
-        drawEighth(MV, prog, 180, Vector3f(-inspctExp, inspctExp, inspctExp)); 
-        drawEighth(MV, prog, 270, Vector3f(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 180, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
+        this.drawEighth(MV, prog, 270, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
         
-        MV->popMatrix();    
-        MV->popMatrix();
+        MV.popMatrix();    
+        MV.popMatrix();
         
-        glUniform3fv(prog->getUniform("kdFront"), 1, colors["green"].data());
-        MV->pushMatrix();
-        MV->translate(Vector3f(-0.15*1.1, 0, 0));
-        drawHalf(MV, prog, 0, Vector3f(inspctExp + 1.0, 0, 0));
-        drawHalf(MV, prog, 180, Vector3f(inspctExp + 1.0, 0, 0));
-        MV->popMatrix();
+        glUniform3fv(prog.getUniform("kdFront"), colors["green"]);
+        MV.pushMatrix();
+        MV.translate(vec3.fromValues(-0.15*1.1, 0, 0));
+        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        MV.popMatrix();
         
         
-        glUniform3fv(prog->getUniform("kdFront"), 1, colors["orange"].data());
-        MV->pushMatrix();
-        MV->translate(Vector3f(0.15*1.1, 0, 0));
-        drawHalf(MV, prog, 0, Vector3f(inspctExp + 1.0, 0, 0));
-        drawHalf(MV, prog, 180, Vector3f(inspctExp + 1.0, 0, 0));
-        MV->popMatrix();
+        glUniform3fv(prog.getUniform("kdFront"), colors["orange"]);
+        MV.pushMatrix();
+        MV.translate(vec3.fromValues(0.15*1.1, 0, 0));
+        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        MV.popMatrix();
         
-        glUniform3fv(prog->getUniform("kdFront"), 1, colors["grey"].data());
-        MV->pushMatrix();
-        MV->translate(Vector3f(0.45*1.1, 0, 0));
-        drawHalf(MV, prog, 0, Vector3f(inspctExp + 1.0, 0, 0));
-        drawHalf(MV, prog, 180, Vector3f(inspctExp + 1.0, 0, 0));
-        MV->popMatrix();
+        glUniform3fv(prog.getUniform("kdFront"), colors["grey"]);
+        MV.pushMatrix();
+        MV.translate(vec3.fromValues(0.45*1.1, 0, 0));
+        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        MV.popMatrix();
     };
     
-    var drawEighth = function(MV, prog) {  
-        MV->pushMatrix();
-        MV->rotate(rot, Vector3f(0.0, 1.0, 0.0));
-        MV->scale(scale);
-        MV->translate(translate);
-        glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE, MV->topMatrix().data());
-        eighth->draw(prog);
+    this.drawEighth = function(MV, prog) {  
+        MV.pushMatrix();
+        MV.rotate(rot, vec3.fromValues(0.0, 1.0, 0.0));
+        MV.scale(scale);
+        MV.translate(translate);
+        glUniformMatrix4fv(prog.getUniform("MV"), false, MV.top());
+        eighth.draw(prog);
         
-        MV->popMatrix();
+        MV.popMatrix();
     };
     
-    var drawHalf = function(MV, prog) {
-        MV->pushMatrix();
-        MV->scale(scale);
-        MV->rotate(rot, Vector3f(0, 1, 0));
-        MV->translate(translate);
-        glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE, MV->topMatrix().data());
-        half->draw(prog);
+    this.drawHalf = function(MV, prog) {
+        MV.pushMatrix();
+        MV.scale(scale);
+        MV.rotate(rot, vec3.fromValues(0, 1, 0));
+        MV.translate(translate);
+        glUniformMatrix4fv(prog.getUniform("MV"), false, MV.top());
+        half.draw(prog);
         
-        MV->popMatrix();
+        MV.popMatrix();
     };
     
     var type = type;
@@ -406,6 +423,6 @@ function Crystal(type, eighth, half, sphere, colors) {
     var half = half;
     var sphere = sphere;
     var colors = colors;
-    var cells = [];
-    var layers = [];
+    var cells = new Array();
+    var layers = new Array();
 }

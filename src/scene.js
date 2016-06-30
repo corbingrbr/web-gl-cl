@@ -13,9 +13,19 @@ var Scene = {
         this.setupColors();
 
         // TODO
-        //this.crystals.push(new Crystal(Crystal.Type.SIMPLE, eighth, half, sphere, colors));
-        //this.crystals.push(new Crystal(Crystal.Type.BODY, eighth, half, sphere, colors));
-        //this.crystals.push(new Crystal(Crystal.Type.FACE, eighth, half, sphere, colors));
+        var crystal;
+        
+        crystal = new Crystal(CrystalType.SIMPLE, this.eighth, this.half, this.sphere, this.colors);
+        crystal.init();
+        this.crystals.push(crystal);
+        
+        /*crystal = new Crystal(CrystalType.BODY, this.eighth, this.half, this.sphere, this.colors);
+        crystal.init();
+        this.crystals.push(crystal);
+        
+        crystal = new Crystal(CrystalType.FACE, this.eighth, this.half, this.sphere, this.colors);
+        crystal.init();
+        this.crystals.push(crystal);*/
     },
 
     setupColors : function() {
@@ -29,7 +39,7 @@ var Scene = {
 
     nextCrystal : function() { 
         this.whichCrystal = (this.whichCrystal + 1) % this.crystals.length;
-        //this.crystals[this.whichCrystal].setDrawLayers();
+        this.crystals[this.whichCrystal].setDrawLayers();
     },
 
     getCrystal : function() { 
@@ -37,47 +47,36 @@ var Scene = {
     },
     
     draw : function(MV, prog) { 
-        // configure gl viewport and clean buffers
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-
-        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
-        gl.uniform3fv(prog.getHandle("kdFront"), this.colors["orange"]);
-        gl.uniform1f(prog.getHandle("alpha"), 1.0);
-        this.sphere.draw(prog);
-        
-        //this.crystals[this.whichCrystal].draw(MV, prog);
+        this.crystals[this.whichCrystal].draw(MV, prog);
     },
 
     expand : function() {
         for (crystal in this.crystals) {
-            //crystal.expand();
+            crystal.expand();
         }
     },
 
     contract : function() {
         for (crystal in this.crystals) {
-           //crystal.contract();
+           crystal.contract();
         }
     },
 
     toggleTranslucency : function() {
         for (crystal in this.crystals) {
-            //crystal.toggleTranslucency();
+            crystal.toggleTranslucency();
         }
     },
 
     toggleLayers : function() {
         for (crystal in this.crystals) {
-            //crystal.toggleLayers();
+            crystal.toggleLayers();
         }
     },
 
     toggleInspection : function() {
         for (crystal in this.crystals) {
-            //crystal.toggleInspection();
+            crystal.toggleInspection();
         }
     },
 

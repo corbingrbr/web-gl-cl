@@ -7,6 +7,7 @@
 <script type="text/javascript" src="src/jquery-3.0.0.min.js"></script>
 <script type="text/javascript" src="src/webgl-utils.js"></script>
 <script type="text/javascript" src="src/gl-matrix/common.js"></script>
+<script type="text/javascript" src="src/gl-matrix/mat3.js"></script>
 <script type="text/javascript" src="src/gl-matrix/mat4.js"></script>
 <script type="text/javascript" src="src/gl-matrix/vec2.js"></script>
 <script type="text/javascript" src="src/gl-matrix/vec3.js"></script>
@@ -21,7 +22,12 @@
 <script type="text/javascript" src="src/scene.js"></script>
 <script type="text/javascript" src="src/camera.js"></script>
 <script type="text/javascript" src="src/assert.js"></script>
-
+<script type="text/javascript" src="src/crystal.js"></script>
+<script type="text/javascript" src="src/unitCell.js"></script>
+<script type="text/javascript" src="src/simpleCubic.js"></script>
+<script type="text/javascript" src="src/layer.js"></script>
+<script type="text/javascript" src="src/user.js"></script>
+<script type="text/javascript" src="src/angleAxis.js"></script>
 
 <script type="text/javascript">
   
@@ -54,9 +60,7 @@
         camera.setAspect(1200.0 / 900.0);
 
         // Setup key events
-        // User.setup();
-
-        //while (!Scene.isLoaded());
+        User.setup();
 
         tick();
   }  
@@ -68,7 +72,7 @@
         // configure gl viewport and clean buffers
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clearColor(1.0, 1.0, 1.0, 1.0);
   
         var MV = new MatrixStack();
         var P = new MatrixStack();
@@ -97,9 +101,9 @@
 
 </head>
 
-<body onload="webGLStart();">
+<body bgcolor="#000000" onload="webGLStart();">
   <center>
-    <canvas id="canvas" style="border: 1px solid #000000" width="1200" height="900" align="center"></canvas>
+    <canvas id="canvas" style="color : #FFFFFF" width="1200" height="900" align="center"></canvas>
   </center>
 </body>
 

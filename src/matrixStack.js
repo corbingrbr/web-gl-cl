@@ -10,8 +10,9 @@ function MatrixStack() {
     };
     
     this.pushMatrix = function() {
-        var top = mstack.top();
-        mstack.push(top);
+        var a = mstack.top().slice();
+        
+        mstack.push(a);
         assert(mstack.size() < 100, "stack exceeds 100 matrices");
     };
     
@@ -30,7 +31,14 @@ function MatrixStack() {
     };
     
     this.translate = function(trans) {
-        mat4.translate(mstack.top(), mstack.top(), trans);
+        var m = mat4.create();
+        mat4.identity(m);
+
+        m[12] = trans[0];
+        m[13] = trans[1];
+        m[14] = trans[2];
+        
+        mat4.multiply(mstack.top(), mstack.top(), m); 
     };
     
     this.scale = function(vector) {
@@ -43,8 +51,24 @@ function MatrixStack() {
     
     this.rotate = function(angle, axis) {
         var rad = angle * Math.PI / 180.0;
+        
+        var m = mat4.create();
+        mat4.identity(m);
 
-        mat4.rotate(mstack.top(), mstack.top(), rad, axis);
+        var aa = new AngleAxis(rad, axis);
+        var rm = aa.toRotationMatrix();
+        
+        m[0] = rm[0];
+        m[1] = rm[1];
+        m[2] = rm[2];
+        m[4] = rm[3];
+        m[5] = rm[4];
+        m[6] = rm[5];
+        m[8] = rm[6];
+        m[9] = rm[7];
+        m[10] = rm[8]; 
+        
+        mat4.multiply(mstack.top(), mstack.top(), m);
     };
     
     // TODO
@@ -60,12 +84,13 @@ function MatrixStack() {
         var M = mat4.create();
 
         var tanHalfFovy = Math.tan(0.5 *fovy * Math.PI / 180.0);
-
+        
         M[0] = 1.0 / (aspect * tanHalfFovy);
 	    M[5] = 1.0 / (tanHalfFovy);
-	    M[6] = -(zFar + zNear) / (zFar - zNear);
+	    M[10] = -(zFar + zNear) / (zFar - zNear);
 	    M[14] = -(2.0 * zFar * zNear) / (zFar - zNear);
 	    M[11] = -1.0;
+        M[15] = 0;
 
         mat4.copy(mstack.top(), M);
     };
@@ -74,7 +99,17 @@ function MatrixStack() {
     // TODO
     this.lookAt = function(eye, target, up) {};
     // TODO
-    this.printStack = function() { console.log(mstack.size()); };
+    this.printTop = function() { 
+        
+        var m = this.top();
+        console.log(m[0] + " " +  m[4]  + " " + m[8]  + " " + m[12]);
+        console.log(m[1] + " " +  m[5]  + " " + m[9]  + " " + m[13]);
+        console.log(m[2] + " " +  m[6]  + " " + m[10]  + " " + m[14]);
+        console.log(m[3] + " " +  m[7]  + " " + m[11]  + " " + m[15] + "\n\n");
+        
+    };
+
+    this.size = function() { return mstack.size(); };
 
     var mstack = new Stack();
     mstack.push(mat4.create());
