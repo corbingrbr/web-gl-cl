@@ -23,7 +23,6 @@ var User = {
         };
 
         canvas.onmousemove = function(e) {
-            //console.log(e);
             
             if (this.mouseDown) {
                 camera.mouseMoved(e.clientX, e.clientY, this.first);
@@ -36,22 +35,28 @@ var User = {
 
         // Handle user key events        
         $(document).keydown(function(e) {
-	        switch(e.which) {
+	        
+            switch(e.which) {
 		
-	        case 'h': // left
-                
+	        case 'E'.charCodeAt(0): // left
+                Scene.expand();
+		        break;
+	        case 'C'.charCodeAt(0): // right
+		        Scene.contract();
+		        break;
+	        case 'T'.charCodeAt(0): 
+                Scene.toggleTranslucency();
+		        break;
+	        case 'N'.charCodeAt(0): 
+                Scene.nextCrystal();
+		        break;
+            case 'L'.charCodeAt(0):
+                Scene.toggleLayers();
+                break;
+            case 'I'.charCodeAt(0):
+                Scene.toggleInspection();
+                break;
 
-		        break;
-	        case 'e': // right
-		
-		        break;
-	        case 38: // Up Arrow
-		        break;
-		
-	        case 40: //Down Arrow
-                console.log("down");
-		        break;
-		        
 	        default: return; // exit this handler for other keys
 	        }
 	        e.preventDefault(); // prevent the default action (scroll / move caret)

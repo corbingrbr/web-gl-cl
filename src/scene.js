@@ -19,13 +19,13 @@ var Scene = {
         crystal.init();
         this.crystals.push(crystal);
         
-        /*crystal = new Crystal(CrystalType.BODY, this.eighth, this.half, this.sphere, this.colors);
+        crystal = new Crystal(CrystalType.BODY, this.eighth, this.half, this.sphere, this.colors);
         crystal.init();
         this.crystals.push(crystal);
         
         crystal = new Crystal(CrystalType.FACE, this.eighth, this.half, this.sphere, this.colors);
         crystal.init();
-        this.crystals.push(crystal);*/
+        this.crystals.push(crystal);
     },
 
     setupColors : function() {
@@ -51,32 +51,32 @@ var Scene = {
     },
 
     expand : function() {
-        for (crystal in this.crystals) {
-            crystal.expand();
+        for (var i = 0; i < this.crystals.length; i++) {
+            this.crystals[i].expand();
         }
     },
 
     contract : function() {
-        for (crystal in this.crystals) {
-           crystal.contract();
+        for (var i = 0; i < this.crystals.length; i++) {
+            this.crystals[i].contract();
         }
     },
 
     toggleTranslucency : function() {
-        for (crystal in this.crystals) {
-            crystal.toggleTranslucency();
+        for (var i = 0; i < this.crystals.length; i++) {
+            this.crystals[i].toggleTranslucency();
         }
     },
 
     toggleLayers : function() {
-        for (crystal in this.crystals) {
-            crystal.toggleLayers();
+        for (var i = 0; i < this.crystals.length; i++) {
+            this.crystals[i].toggleLayers();
         }
     },
 
     toggleInspection : function() {
-        for (crystal in this.crystals) {
-            crystal.toggleInspection();
+        for (var i = 0; i < this.crystals.length; i++) {
+            this.crystals[i].toggleInspection();
         }
     },
 
@@ -88,6 +88,6 @@ var Scene = {
     eighth : new Shape(),
     half : new Shape(),
     sphere : new Shape(),
-    crystals : [],
+    crystals : new Array(),
     colors : {}
 };

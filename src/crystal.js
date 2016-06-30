@@ -25,15 +25,13 @@ function Crystal(type, eighth, half, sphere, colors) {
     };
     
     this.draw = function(MV, prog) {
-       /* if (inspecting) {
+        if (inspecting) {
             this.drawInspect(MV, prog);
         } else if (layersDraw) {
             this.drawLayers(MV, prog);
         } else {
             this.drawCells(MV, prog);
-        }*/
-
-        this.drawCells(MV, prog);
+        }
     };
     
     this.expand = function() {
@@ -91,7 +89,7 @@ function Crystal(type, eighth, half, sphere, colors) {
     this.drawCells = function(MV, prog) {
 
         // sortCells
-        
+
         var alpha = translucent ? 0.3 : 1.0;
         gl.uniform1f(prog.getHandle("alpha"), alpha);
         
@@ -108,6 +106,8 @@ function Crystal(type, eighth, half, sphere, colors) {
             var v = vec3.fromValues(cells[i].pos[0], cells[i].pos[1], cells[i].pos[2]);
             // Vector for cell positioning
             var bounds = cells[i].bounds;
+
+            //console.log(bounds);
             var ndx = cells[i].ndx;
             vec3.scale(v, v, expansion); // Adjust cell positioning by any expansion
           
@@ -175,36 +175,32 @@ function Crystal(type, eighth, half, sphere, colors) {
                 for (var k = 0; k < height; k++) {
                     if (i != midi || j != midj || k != midk) {
                         
-                        var x = UnitCell.MIDDLE;
-                        var y = UnitCell.MIDDLE;
-                        var z = UnitCell.MIDDLE;
+                        var x = UnitCellPos.MIDDLE;
+                        var y = UnitCellPos.MIDDLE;
+                        var z = UnitCellPos.MIDDLE;
 
-                        if (i == 0) { x = UnitCell.MIN; }
-                        if (i == rows-1) { x = UnitCell.MAX; }
-                        if (i == rows-2) { x = UnitCell.ONEB4MAX; }
-
-                        if (i == 1) { x = UnitCell.ONEB4MIN; }
+                        if (i == 0) { x = UnitCellPos.MIN; }
+                        if (i == rows-1) { x = UnitCellPos.MAX; }
+                        if (i == rows-2) { x = UnitCellPos.ONEB4MAX; }
+                        if (i == 1) { x = UnitCellPos.ONEB4MIN; }
                         
-                        if (j == 0) { y = UnitCell.MIN; }
-                        if (j == cols-1) { y = UnitCell.MAX; }
-
-                        if (j == cols-2) { y = UnitCell.ONEB4MAX; }
-
-                        if (j == 1) { y = UnitCell.ONEB4MIN; }
+                        if (j == 0) { y = UnitCellPos.MIN; }
+                        if (j == cols-1) { y = UnitCellPos.MAX; }
+                        if (j == cols-2) { y = UnitCellPos.ONEB4MAX; }
+                        if (j == 1) { y = UnitCellPos.ONEB4MIN; }
 
 
-                        if (k == 0) { z = UnitCell.MIN; }
-                        if (k == height-1) { z = UnitCell.MAX; }
-                        if (k == height-2) { z = UnitCell.ONEB4MAX; }
-
-                        if (k == 1) { z = UnitCell.ONEB4MIN; }
-
+                        if (k == 0) { z = UnitCellPos.MIN; }
+                        if (k == height-1) { z = UnitCellPos.MAX; }
+                        if (k == height-2) { z = UnitCellPos.ONEB4MAX; }
+                        if (k == 1) { z = UnitCellPos.ONEB4MIN; }
 
                         var bounds = vec3.fromValues(y, z, x);
                         var pos = vec4.fromValues(o[0] + j*2, o[1] + k*2, o[2] + i*2 , 1);
                         var ndx = vec3.fromValues(i, j, k);
 
                         var c = new Cell(bounds, pos, ndx);
+
                         cells.push(c);
                     }
                 }

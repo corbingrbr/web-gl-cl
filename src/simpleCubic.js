@@ -12,15 +12,13 @@ function SimpleCubic(eighth, half, sphere, colors) {
 
         MV.pushMatrix();
         MV.translate(pos);
-        
+
         if (bounds[1] != UnitCellPos.MIN) {
             
             if (bounds[2] != UnitCellPos.MIN) {
                 
-                if (bounds[0] != UnitCellPos.MAX) { 
-                    this.drawEighth(MV, prog, 0); }
-                if (bounds[0] != UnitCellPos.MIN) { 
-                    this.drawEighth(MV, prog, 90); }
+                if (bounds[0] != UnitCellPos.MAX) { this.drawEighth(MV, prog, 0); }
+                if (bounds[0] != UnitCellPos.MIN) { this.drawEighth(MV, prog, 90); }
             }
             
             if (bounds[2] != UnitCellPos.MAX) {
@@ -30,14 +28,17 @@ function SimpleCubic(eighth, half, sphere, colors) {
         }
         
         if (bounds[1] != UnitCellPos.MAX) {
+            
             MV.pushMatrix();
             MV.rotate(90.0, vec3.fromValues(1.0, 0.0, 0.0));
+           
             if (bounds[2] != UnitCellPos.MIN) {
                 if (bounds[0] != UnitCellPos.MAX) { this.drawEighth(MV, prog, 0); }
                 if (bounds[0] != UnitCellPos.MIN) { this.drawEighth(MV, prog, 90); }
             }
             
             MV.rotate(180.0, vec3.fromValues(1.0, 0.0, 0.0));
+           
             if (bounds[2] != UnitCellPos.MAX){ 
                 if (bounds[0] != UnitCellPos.MIN) { this.drawEighth(MV, prog, 180); }
                 if (bounds[0] != UnitCellPos.MAX) { this.drawEighth(MV, prog, 270); }
@@ -61,17 +62,4 @@ function SimpleCubic(eighth, half, sphere, colors) {
         
         MV.popMatrix();
     };
-    
-    this.drawHalf = function(MV, prog, rot, axis) {
-        MV.pushMatrix();
-        MV.rotate(rot, axis);
-        MV.translate(vec3.fromValues(-1.0,0,0)*(1-scale));
-        //MV.scale(scale);
-        MV.translate(vec3.fromValues(-.01, 0, 0));
-        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
-        half.draw(prog);
-        
-        MV.popMatrix();
-    };
-
 }

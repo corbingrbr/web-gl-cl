@@ -2,106 +2,111 @@ function FaceCentered(eighth, half, sphere, colors) {
     
     this.draw = function(MV, prog, pos, alpha, center, bounds, ndx) {
         
+
+        /*gl.uniform3fv(prog.getHandle("kdFront"), colors["red"]);            // 9
+        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
+        half.draw(prog);*/
+
         if (center && alpha < 1.0) { 
-            glUniform1f(prog->getUniform("alpha"), 1.0);
+            gl.uniform1f(prog.getHandle("alpha"), 1.0);
         } 
 
-        MV->pushMatrix();
-        MV->translate(pos);
+        MV.pushMatrix();
+        MV.translate(pos);
         
-        int x = ndx(0);
-        int y = ndx(1);
-        int z = ndx(2);
+        var x = ndx[0];
+        var y = ndx[1];
+        var z = ndx[2];
 
-        glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 12).data());           // 12
+        gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 12));           // 12
         
-        if (bounds(0) >= UnitCell::ONEB4MIN && bounds(0) <= UnitCell::MAX && // left right
-            bounds(1) >= UnitCell::ONEB4MIN && bounds(1) < UnitCell::MAX && // height
-            bounds(2) >= UnitCell::ONEB4MIN && bounds(2) < UnitCell::MAX) {  // depth
-            drawHalf(MV, prog, 0, Vector3f(0, 1.0, 0)); 
+        if (bounds[0] >= UnitCellPos.ONEB4MIN && bounds[0] <= UnitCellPos.MAX && // left right
+            bounds[1] >= UnitCellPos.ONEB4MIN && bounds[1] < UnitCellPos.MAX && // height
+            bounds[2] >= UnitCellPos.ONEB4MIN && bounds[2] < UnitCellPos.MAX) {  // depth
+            this.drawHalf(MV, prog, 0, vec3.fromValues(0, 1.0, 0)); 
         }
 
         
-        glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 9).data());            // 9
-        if (bounds(0) >= UnitCell::ONEB4MIN && bounds(0) < UnitCell::MAX && // left right
-            bounds(1) >= UnitCell::ONEB4MIN && bounds(1) < UnitCell::MAX && // height
-            bounds(2) >= UnitCell::MIN && bounds(2) < UnitCell::MAX) { // depth
-            drawHalf(MV, prog, 90, Vector3f(0, 1.0, 0));
+        gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 9));            // 9
+        if (bounds[0] >= UnitCellPos.ONEB4MIN && bounds[0] < UnitCellPos.MAX && // left right
+            bounds[1] >= UnitCellPos.ONEB4MIN && bounds[1] < UnitCellPos.MAX && // height
+            bounds[2] >= UnitCellPos.MIN && bounds[2] < UnitCellPos.MAX) { // depth
+            this.drawHalf(MV, prog, 90, vec3.fromValues(0, 1.0, 0));
         }
 
-        glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 14).data());           // 14
-        if (bounds(0) >= UnitCell::MIN && bounds(0) < UnitCell::MAX && // left right
-            bounds(1) >= UnitCell::ONEB4MIN && bounds(1) < UnitCell::MAX && // height
-            bounds(2) >= UnitCell::ONEB4MIN && bounds(2) < UnitCell::MAX) { // depth
-            drawHalf(MV, prog, 180, Vector3f(0, 1.0, 0));
+        gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 14));           // 14
+        if (bounds[0] >= UnitCellPos.MIN && bounds[0] < UnitCellPos.MAX && // left right
+            bounds[1] >= UnitCellPos.ONEB4MIN && bounds[1] < UnitCellPos.MAX && // height
+            bounds[2] >= UnitCellPos.ONEB4MIN && bounds[2] < UnitCellPos.MAX) { // depth
+            this.drawHalf(MV, prog, 180, vec3.fromValues(0, 1.0, 0));
         }
 
-        glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 10).data());          // 10
-        if (bounds(0) >= UnitCell::ONEB4MIN && bounds(0) < UnitCell::MAX && // left right
-            bounds(1) >= UnitCell::ONEB4MIN && bounds(1) < UnitCell::MAX && // height
-            bounds(2) >= UnitCell::ONEB4MIN && bounds(2) <= UnitCell::MAX) { 
-            drawHalf(MV, prog, 270, Vector3f(0, 1.0, 0));
+        gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 10));          // 10
+        if (bounds[0] >= UnitCellPos.ONEB4MIN && bounds[0] < UnitCellPos.MAX && // left right
+            bounds[1] >= UnitCellPos.ONEB4MIN && bounds[1] < UnitCellPos.MAX && // height
+            bounds[2] >= UnitCellPos.ONEB4MIN && bounds[2] <= UnitCellPos.MAX) {
+            this.drawHalf(MV, prog, 270, vec3.fromValues(0, 1.0, 0));
         }
 
-        glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 11).data());          // 11
-        if (bounds(0) >= UnitCell::ONEB4MIN && bounds(0) < UnitCell::MAX && // left right
-            bounds(1) >= UnitCell::MIN && bounds(1) < UnitCell::MAX && // height
-            bounds(2) >= UnitCell::ONEB4MIN && bounds(2) < UnitCell::MAX) { 
-            drawHalf(MV, prog, -90, Vector3f(0, 0, 1.0));
+        gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 11));          // 11
+        if (bounds[0] >= UnitCellPos.ONEB4MIN && bounds[0] < UnitCellPos.MAX && // left right
+            bounds[1] >= UnitCellPos.MIN && bounds[1] < UnitCellPos.MAX && // height
+            bounds[2] >= UnitCellPos.ONEB4MIN && bounds[2] < UnitCellPos.MAX) { 
+            this.drawHalf(MV, prog, -90, vec3.fromValues(0, 0, 1.0));
         }
 
-        glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 13).data());          // 13
-        if (bounds(0) >= UnitCell::ONEB4MIN && bounds(0) < UnitCell::MAX && // left right
-            bounds(1) >= UnitCell::ONEB4MIN && bounds(1) <= UnitCell::MAX && // height
-            bounds(2) >= UnitCell::ONEB4MIN && bounds(2) < UnitCell::MAX) { 
-            drawHalf(MV, prog, 90, Vector3f(0, 0, 1.0));
+        gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 13));          // 13
+        if (bounds[0] >= UnitCellPos.ONEB4MIN && bounds[0] < UnitCellPos.MAX && // left right
+            bounds[1] >= UnitCellPos.ONEB4MIN && bounds[1] <= UnitCellPos.MAX && // height
+            bounds[2] >= UnitCellPos.ONEB4MIN && bounds[2] < UnitCellPos.MAX) { 
+            this.drawHalf(MV, prog, 90, vec3.fromValues(0, 0, 1.0));
         }
         
-        if (bounds(1) != UnitCell::MIN) {
+        if (bounds[1] != UnitCellPos.MIN) {
             
-            if (bounds(2) != UnitCell::MIN) {
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 8).data());  // 8
-                if (bounds(0) != UnitCell::MAX) { drawEighth(MV, prog, 0); }
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 7).data());  // 7
-                if (bounds(0) != UnitCell::MIN) { drawEighth(MV, prog, 90); }
-            }
-            
-            if (bounds(2) != UnitCell::MAX) {
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 3).data()); // 3
-                if (bounds(0) != UnitCell::MIN) { drawEighth(MV, prog, 180); }
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 4).data()); // 4
-                if (bounds(0) != UnitCell::MAX) { drawEighth(MV, prog, 270); }                
-            }
-        }
-        
-        if (bounds(1) != UnitCell::MAX) {
-            MV->pushMatrix();
-            MV->rotate(90.0f, Vector3f(1.0, 0.0, 0.0));
-            if (bounds(2) != UnitCell::MIN) {
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 5).data()); // 5
-                if (bounds(0) != UnitCell::MAX) { drawEighth(MV, prog, 0); }
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 6).data()); // 6
-                if (bounds(0) != UnitCell::MIN) { drawEighth(MV, prog, 90); }
+            if (bounds[2] != UnitCellPos.MIN) {
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 8));  // 8
+                if (bounds[0] != UnitCellPos.MAX) { this.drawEighth(MV, prog, 0); }
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 7));  // 7
+                if (bounds[0] != UnitCellPos.MIN) { this.drawEighth(MV, prog, 90); }
             }
             
-            MV->rotate(180.0f, Vector3f(1.0, 0.0, 0.0));
-            if (bounds(2) != UnitCell::MAX) {
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 2).data()); // 2
-                if (bounds(0) != UnitCell::MIN) { drawEighth(MV, prog, 180); } 
-                glUniform3fv(prog->getUniform("kdFront"), 1, whichColor(x,y,z, 1).data()); // 1
-                if (bounds(0) != UnitCell::MAX) { drawEighth(MV, prog, 270); }
+            if (bounds[2] != UnitCellPos.MAX) {
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 3)); // 3
+                if (bounds[0] != UnitCellPos.MIN) { this.drawEighth(MV, prog, 180); }
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 4)); // 4
+                if (bounds[0] != UnitCellPos.MAX) { this.drawEighth(MV, prog, 270); }                
             }
-            MV->popMatrix();
+        }
+        
+        if (bounds[1] != UnitCellPos.MAX) {
+            MV.pushMatrix();
+            MV.rotate(90.0, vec3.fromValues(1.0, 0.0, 0.0));
+            if (bounds[2] != UnitCellPos.MIN) {
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 5)); // 5
+                if (bounds[0] != UnitCellPos.MAX) { this.drawEighth(MV, prog, 0); }
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 6)); // 6
+                if (bounds[0] != UnitCellPos.MIN) { this.drawEighth(MV, prog, 90); }
+            }
+            
+            MV.rotate(180.0, vec3.fromValues(1.0, 0.0, 0.0));
+            if (bounds[2] != UnitCellPos.MAX) {
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 2)); // 2
+                if (bounds[0] != UnitCellPos.MIN) { this.drawEighth(MV, prog, 180); } 
+                gl.uniform3fv(prog.getHandle("kdFront"), this.whichColor(x,y,z, 1)); // 1
+                if (bounds[0] != UnitCellPos.MAX) { this.drawEighth(MV, prog, 270); }
+            }
+            MV.popMatrix();
         }
 
-        MV->popMatrix();
+        MV.popMatrix();
 
-        glUniform1f(prog->getUniform("alpha"), alpha); // Make sure alpha is same as it was 
+        gl.uniform1f(prog.getHandle("alpha"), alpha); // Make sure alpha is same as it was 
     }
 
     this.whichColor = function(x, y, z, id) {
          
-        int key = (z + y) % 3; 
+        var key = (z + y) % 3; 
 
         // g, gr, o: 1, 5, 12, 13
         // o, g, gr: 2, 4, 6, 8, 9, 10, 11
@@ -197,5 +202,31 @@ function FaceCentered(eighth, half, sphere, colors) {
         
 
         return colors["black"];
-    }
+    };
+    
+    this.drawEighth = function(MV, prog, rot) {
+        MV.pushMatrix();
+        
+        MV.rotate(rot, vec3.fromValues(0.0, 1.0, 0.0));
+        MV.translate(vec3.fromValues(1.0, -1.0, -1.0));
+        MV.scale(this.scale);
+        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
+        eighth.draw(prog);
+        
+        MV.popMatrix();
+    };
+
+    this.drawHalf = function(MV, prog, rot, axis) {
+
+        MV.pushMatrix();
+        MV.rotate(rot, axis);
+        MV.translate(vec3.fromValues(-1.0 * (1 - this.scale),0,0));
+        MV.scale(this.scale);
+        MV.translate(vec3.fromValues(-.01, 0, 0));
+        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
+        half.draw(prog);
+        MV.popMatrix();
+    }; 
+
+    this.scale = 0.71;
 }
