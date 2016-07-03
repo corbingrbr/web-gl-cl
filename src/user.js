@@ -1,33 +1,30 @@
 var User = {
 
-   /* keys : {
-        E : 
-,
-        C : ,
-        },*/
-
     mouseDown : false,
     first : true,
+    ctrl : false,
     
     setup: function() {
         
         var canvas = document.getElementById("canvas");
 
         canvas.onmousedown = function(e) {
-            this.mouseDown = true;
+            User.mouseDown = true;
         };
 
         canvas.onmouseup = function(e) {
-            this.mouseDown = false;
-            this.first = true;
+            User.mouseDown = false;
+            User.first = true;
         };
 
         canvas.onmousemove = function(e) {
             
-            if (this.mouseDown) {
-                camera.mouseMoved(e.clientX, e.clientY, this.first);
-                if (this.first) {
-                    this.first = false; 
+            if (User.mouseDown) {
+                console.log(User.ctrl);
+                camera.mouseMoved(e.clientX, e.clientY, User.first, User.ctrl);
+               
+                if (User.first) {
+                    User.first = false; 
                 }
             }         
         };
@@ -35,7 +32,7 @@ var User = {
 
         // Handle user key events        
         $(document).keydown(function(e) {
-	        
+
             switch(e.which) {
 		
 	        case 'E'.charCodeAt(0): // left
@@ -56,11 +53,20 @@ var User = {
             case 'I'.charCodeAt(0):
                 Scene.toggleInspection();
                 break;
-
+            case 17: 
+                User.ctrl = true;
+                break;
 	        default: return; // exit this handler for other keys
 	        }
 	        e.preventDefault(); // prevent the default action (scroll / move caret)
            	
         });   
+
+        $(document).keyup(function(e) {
+
+            if (e.which == 17) {
+                User.ctrl = false;
+            }
+        });
     }
 };

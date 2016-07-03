@@ -40,11 +40,16 @@
   
   function webGLStart() {
   
-  
         // Initialize scene
         Scene.load("resources/");
 
         initGL(); // sets up canvas element for webgl 
+
+        gl.enable(gl.DEPTH_TEST);
+     	gl.enable(gl.BLEND);
+	    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.enable(gl.CULL_FACE);
+
 
         // Setup shader  
         prog = new Program("shader-vs", "shader-fs");

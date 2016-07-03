@@ -1,4 +1,4 @@
-#version 120
+precision mediump float;
 
 varying vec3 fragPos; // in camera space
 varying vec3 fragNor; // in camera space

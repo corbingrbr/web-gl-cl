@@ -25,28 +25,21 @@ function Camera()
 	    }
     };
 
-    this.mouseMoved = function(x, y, first) {
-        
+    this.mouseMoved = function(x, y, first, zoom) {
+
         if (!first) {
             
             var mouseCurr = vec2.fromValues(x, y);
 	    
             var dv = vec2.create();
             vec2.sub(dv, mouseCurr, mousePrev);
-	        
-            switch(state) {
-		    case this.State.ROTATE:
-			    rotations[0] += rfactor * dv[0];
+
+            if (zoom) {
+                translations[2] *= (1.0 - sfactor * dv[1]); 
+            } else {
+                rotations[0] += rfactor * dv[0];
                 rotations[1] += rfactor * dv[1]
-			    break;
-		    case this.State.TRANSLATE:
-			    translations[0] -= translations[2] * tfactor * dv[0];
-			    translations[1] += translations[2] * tfactor * dv[1];
-			    break;
-		case this.State.SCALE:
-			    translations[2] *= (1.0 - sfactor * dv[1]);
-			    break;
-	        }
+            }
         }
 	  
         mousePrev = vec2.fromValues(x, y);

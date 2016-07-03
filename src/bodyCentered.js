@@ -69,6 +69,7 @@ function BodyCentered(eighth, half, sphere, colors) {
         
         MV.rotate(rot, vec3.fromValues(0.0, 1.0, 0.0));
         MV.translate(vec3.fromValues(1.0, -1.0, -1.0));
+        MV.scale(this.scale);
         gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
         eighth.draw(prog);
         

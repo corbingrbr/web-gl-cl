@@ -88,9 +88,10 @@ function Crystal(type, eighth, half, sphere, colors) {
 
     this.drawCells = function(MV, prog) {
 
-        // sortCells
+        this.sortCells(MV.top());
 
         var alpha = translucent ? 0.3 : 1.0;
+
         gl.uniform1f(prog.getHandle("alpha"), alpha);
         
         MV.pushMatrix();
@@ -223,10 +224,8 @@ function Crystal(type, eighth, half, sphere, colors) {
     this.sortCells = function(viewMatrix) {
         
         // Calculate distance of each cell to the camera
-        for (cell in cells) {
-            
-            cell.distance = this.calcCellDistance(viewMatrix, cell.pos);
-            
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].distance = this.calcCellDistance(viewMatrix, cells[i].pos);
         }
         
         // Sort cells in descending order by their distance
@@ -234,7 +233,7 @@ function Crystal(type, eighth, half, sphere, colors) {
     };
     
     this.sortAlg = function(a, b) {
-        return c1.distance - c2.distance; // Might have to switch !!!!!!!!!!!!
+        return b.distance - a.distance; // Might have to switch !!!!!!!!!!!!
     }; 
 
     this.createSimpleLayers = function() {
