@@ -108,9 +108,24 @@
 
 </head>
 
-<body bgcolor="#000000" onload="webGLStart();">
-  <center>
-    <canvas id="canvas" style="color : #FFFFFF" width="1200" height="900" align="center"></canvas>
+<body bgcolor="#FFFFFF" onload="webGLStart();">
+  
+  <div style="margin:auto;width:25%;">
+      <ul style="list-style-type:square">
+        <li>mouse : rotate view</li>
+        <li>mouse + ctrl : zoom</li>
+        <li>'e' : expand</li>  
+        <li>'c' : contract</li> 
+        <li>'t' : translucent</li>
+        <li>'l' : toggle layer animation</li>               
+        <li>'n' : next</li>                  
+      </ul>
+  </div> 
+    
+    <center>
+      <canvas id="canvas" style="border:4px solid #000000;color:#FFFFFF" width="900" height="675" align="center" ></canvas>
+      <p id="crystalType" style="font-size: 40px">Simple</p>
+    </div>
   </center>
 </body>
 

@@ -46,6 +46,10 @@ var Scene = {
         return this.crystals[this.whichCrystal]; 
     },
     
+    getCrystalName : function() {
+        return this.getCrystal().getName();
+    },
+    
     draw : function(MV, prog) { 
         this.crystals[this.whichCrystal].draw(MV, prog);
     },

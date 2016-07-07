@@ -55,12 +55,19 @@ function Camera()
 	    MV.rotate(rotations[0], vec3.fromValues(0.0, 1.0, 0.0));
     };
     
+    this.reset = function() {
+    
+        rotations = vec2.fromValues(0.0,0.0);
+        translations = vec3.fromValues(0.0, 0.0, -3.0);
+
+    }
+
     var aspect = 1.0;
     var fovy = 45.0;
     var znear = 0.1;
     var zfar = 1000.0;
     var rotations = vec2.fromValues(0.0, 0.0);
-    var translations = vec3.fromValues(0.0, 0.0, -5.0);
+    var translations = vec3.fromValues(0.0, 0.0, -3.0);
     var rfactor = 0.2;
     var tfactor = 0.001;
     var sfactor = 0.005;

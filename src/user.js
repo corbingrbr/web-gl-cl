@@ -20,7 +20,6 @@ var User = {
         canvas.onmousemove = function(e) {
             
             if (User.mouseDown) {
-                console.log(User.ctrl);
                 camera.mouseMoved(e.clientX, e.clientY, User.first, User.ctrl);
                
                 if (User.first) {
@@ -45,7 +44,9 @@ var User = {
                 Scene.toggleTranslucency();
 		        break;
 	        case 'N'.charCodeAt(0): 
+                camera.reset();
                 Scene.nextCrystal();
+                document.getElementById("crystalType").innerHTML = Scene.getCrystalName();
 		        break;
             case 'L'.charCodeAt(0):
                 Scene.toggleLayers();
@@ -68,5 +69,5 @@ var User = {
                 User.ctrl = false;
             }
         });
-    }
+    },
 };

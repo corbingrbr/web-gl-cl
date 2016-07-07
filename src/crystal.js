@@ -24,6 +24,22 @@ function Crystal(type, eighth, half, sphere, colors) {
         }
     };
     
+    this.getName = function() {
+
+        switch (type) {
+            case CrystalType.SIMPLE :
+            return "Simple";
+            break;
+            case CrystalType.BODY :
+            return "Body-Centered";
+            break;
+            case CrystalType.FACE :
+            return "Face-Centered";
+            break;
+        }
+    };
+
+
     this.draw = function(MV, prog) {
         if (inspecting) {
             this.drawInspect(MV, prog);
@@ -90,7 +106,7 @@ function Crystal(type, eighth, half, sphere, colors) {
 
         this.sortCells(MV.top());
 
-        var alpha = translucent ? 0.3 : 1.0;
+        var alpha = translucent ? 0.5 : 1.0;
 
         gl.uniform1f(prog.getHandle("alpha"), alpha);
         
@@ -301,8 +317,8 @@ function Crystal(type, eighth, half, sphere, colors) {
     };
     
     this.drawBodyInspect = function(MV, prog) {
-        gl.uniform1f(prog.getUniform("alpha"), 1.0);
-        gl.uniform3fv(prog.getUniform("kdFront"), colors["grey"]);
+        gl.uniform1f(prog.getHandle("alpha"), 1.0);
+        gl.uniform3fv(prog.getHandle("kdFront"), colors["grey"]);
         
         MV.pushMatrix();
         MV.translate(vec3.fromValues(-inspctExp/20 - 0.15, 0, 0));
@@ -324,19 +340,19 @@ function Crystal(type, eighth, half, sphere, colors) {
         MV.popMatrix();    
         MV.popMatrix();
 
-        glUniform3fv(prog.getUniform("kdFront"), colors["red"]);
+        gl.uniform3fv(prog.getHandle("kdFront"), colors["red"]);
         
         MV.pushMatrix();
         MV.translate(vec3.fromValues(.15,0,0));
         MV.scale(scale);
-        glUniformMatrix4fv(prog.getUniform("MV"), false, MV.top());
+        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
         sphere.draw(prog);
         MV.popMatrix();
     };
     
     this.drawFaceInspect = function(MV, prog) {
-        glUniform1f(prog.getUniform("alpha"), 1.0);
-        glUniform3fv(prog.getUniform("kdFront"), colors["grey"]);
+        gl.uniform1f(prog.getHandle("alpha"), 1.0);
+        gl.uniform3fv(prog.getHandle("kdFront"), colors["grey"]);
         MV.pushMatrix();
         MV.translate(vec3.fromValues(-0.45*1.1, 0, 0));
         this.drawEighth(MV, prog, 0, vec3.fromValues(-inspctExp, inspctExp, inspctExp)); 
@@ -357,46 +373,46 @@ function Crystal(type, eighth, half, sphere, colors) {
         MV.popMatrix();    
         MV.popMatrix();
         
-        glUniform3fv(prog.getUniform("kdFront"), colors["green"]);
+        gl.uniform3fv(prog.getHandle("kdFront"), colors["green"]);
         MV.pushMatrix();
         MV.translate(vec3.fromValues(-0.15*1.1, 0, 0));
-        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + 1.0, 0, 0));
-        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + .99, 0, 0));
+        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + .99, 0, 0));
         MV.popMatrix();
         
         
-        glUniform3fv(prog.getUniform("kdFront"), colors["orange"]);
+        gl.uniform3fv(prog.getHandle("kdFront"), colors["orange"]);
         MV.pushMatrix();
         MV.translate(vec3.fromValues(0.15*1.1, 0, 0));
-        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + 1.0, 0, 0));
-        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + .99, 0, 0));
+        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + .99, 0, 0));
         MV.popMatrix();
         
-        glUniform3fv(prog.getUniform("kdFront"), colors["grey"]);
+        gl.uniform3fv(prog.getHandle("kdFront"), colors["grey"]);
         MV.pushMatrix();
         MV.translate(vec3.fromValues(0.45*1.1, 0, 0));
-        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + 1.0, 0, 0));
-        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + 1.0, 0, 0));
+        this.drawHalf(MV, prog, 0, vec3.fromValues(inspctExp + .99, 0, 0));
+        this.drawHalf(MV, prog, 180, vec3.fromValues(inspctExp + .99, 0, 0));
         MV.popMatrix();
     };
     
-    this.drawEighth = function(MV, prog) {  
+    this.drawEighth = function(MV, prog, rot, translate) {  
         MV.pushMatrix();
         MV.rotate(rot, vec3.fromValues(0.0, 1.0, 0.0));
         MV.scale(scale);
         MV.translate(translate);
-        glUniformMatrix4fv(prog.getUniform("MV"), false, MV.top());
+        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
         eighth.draw(prog);
         
         MV.popMatrix();
     };
     
-    this.drawHalf = function(MV, prog) {
+    this.drawHalf = function(MV, prog, rot, translate) {
         MV.pushMatrix();
         MV.scale(scale);
         MV.rotate(rot, vec3.fromValues(0, 1, 0));
         MV.translate(translate);
-        glUniformMatrix4fv(prog.getUniform("MV"), false, MV.top());
+        gl.uniformMatrix4fv(prog.getHandle("MV"), false, MV.top());
         half.draw(prog);
         
         MV.popMatrix();
